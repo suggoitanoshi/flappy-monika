@@ -5,6 +5,7 @@ class Monika{
   private cvs: HTMLCanvasElement;
   private lastRender: number = 0;
   private renderObjects: Renderable[] = [];
+  private renderBG: Renderable;
   private renderID: number;
   private isGameOver: boolean;
 
@@ -19,7 +20,7 @@ class Monika{
    */
   constructor(){
     let ratio = window.innerWidth / window.innerHeight;
-    this.height = 400;
+    this.height = 700;
     this.width = this.height*ratio;
 
     this.scrollSpeed = 2;
@@ -38,9 +39,8 @@ class Monika{
   private clear(): void{
     this.ctx.clearRect(0,0,this.width,this.height);
   }
-  private drawBg(): void{
-    this.ctx.fillStyle = 'lightgreen';
-    this.ctx.fillRect(0,0,this.width, this.height);
+  private drawBg(delta, ctx): void{
+    this.renderBG.render(delta, ctx);
   }
   public getSize(): [number, number]{
     return [this.width, this.height];
@@ -70,13 +70,16 @@ class Monika{
    */
   public InitGame(): void{
     this.clear();
-    this.drawBg();
+    this.drawBg(0,this.ctx);
   }
   public ResetGame(): void{
     this.point = 0;
   }
   public addRenderObject(renderObject: Renderable): void{
     this.renderObjects.push(renderObject);
+  }
+  public setBackground(bg: Renderable): void{
+    this.renderBG = bg;
   }
   /**
    * Function to render globally
@@ -89,7 +92,7 @@ class Monika{
     }
     this.lastRender = now;
     this.clear();
-    this.drawBg();
+    this.drawBg(delta, this.ctx);
     this.renderObjects.forEach(r => r.render(delta, this.ctx));
     this.renderPoints();
     this.renderID = window.requestAnimationFrame((d) => this.render(d));

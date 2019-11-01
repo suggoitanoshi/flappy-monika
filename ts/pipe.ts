@@ -1,38 +1,56 @@
-class Obstacle extends Collidable implements Renderable{
+class ObstacleBase extends Collidable implements Renderable{
   private monika: Monika;
   isActive: boolean;
   color: String;
-  constructor(monika: Monika, y: number, height: number){
+  constructor(monika: Monika, y: number, size: [number, number]){
     super();
-    this.size = [50, height];
+    this.size = size;
     this.monika = monika;
     this.position = [this.monika.getSize()[0]+this.size[0], y];
     this.mask = 0b001;
     this.isActive = true;
-    this.color = 'blue';
   }
   public onCollide(other: Collidable): void{
   }
   public render(delta, ctx){
     this.position[0] -= this.monika.getSpeed()*delta;
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
   }
-  public reinstance = (y: number, h: number): Obstacle =>{
+  public reinstance(y: number, h: number): Obstacle{
     this.position = [this.monika.getSize()[0]+this.size[0],y];
-    this.size[1] = h;
     this.isActive = true;
     return this;
   }
 }
-class ObstaclePoint extends Obstacle{
-  constructor(monika: Monika, y: number, height: number){
-    super(monika, y, height);
+class Obstacle extends ObstacleBase{
+  public render(delta, ctx){
+    // super.render(delta, ctx);
+    // ctx.fillStyle = 'blue';
+    // ctx.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
+  }
+  public reinstance = (y: number, h: number): Obstacle =>{
+    super.reinstance(y, h);
+    this.size[1] = h;
+    return this;
+  }
+}
+class ObstaclePoint extends ObstacleBase{
+  private hitMonika: ImageBitmap;
+  constructor(monika: Monika, y: number, size: [number, number], hitMonika: ImageBitmap){
+    super(monika, y, size);
     this.mask = 0b10;
     this.color = 'purple';
+    this.hitMonika = hitMonika;
+  }
+  public reinstance = (y: number): Obstacle =>{
+    super.reinstance(y, this.size[1]);
+    return this;
   }
   public onCollide(other: Collidable): void{
-    this.isActive = false;
+    this.mask = 0b00;
+  }
+  public render(delta, ctx){
+    super.render(delta, ctx);
+    ctx.drawImage(this.hitMonika, this.position[0], this.position[1], this.size[0], this.size[1]);
   }
 }
 
@@ -40,15 +58,16 @@ class ObstaclePool implements Renderable{
   private pool: Obstacle[];
   private monika: Monika;
   private generateTimer: number;
+  private generatorDistance = 4;
+  private hitMonika: ImageBitmap;
+  private hitMonikaSize: [number, number];
   constructor(monika: Monika){
     this.pool = [];
     this.monika = monika;
     this.generateTimer = 0;
   }
   public generateNewPipes = () => {
-    let rndH = Util.getRandomRange(50,this.monika.getSize()[1]*3/4-80);
-    let botH = Util.getRandomRange((this.monika.getSize()[1]-rndH)/3, this.monika.getSize()[1]-rndH-(50*3/2));
-    let pointH = this.monika.getSize()[1]-rndH-botH;
+    let pointY = Util.getRandomRange(0, this.monika.getSize()[1]-this.hitMonikaSize[1]);
     let top = false;
     let bottom = false;
     let point = false;
@@ -57,37 +76,40 @@ class ObstaclePool implements Renderable{
       if(p.mask == 0b01){
         if(!top){
           top = true;
-          p.reinstance(0, rndH);
+          p.reinstance(0, pointY);
           continue;
         }
         if(!bottom){
           bottom = true;
-          p.reinstance(this.monika.getSize()[1]-botH, botH);
+          p.reinstance(pointY+this.hitMonikaSize[1], this.monika.getSize()[1]);
           continue;
         }
       }
       if(p.mask == 0b10){
         if(!point){
           point = true;
-          p.reinstance(rndH, pointH);
+          (<ObstaclePoint>p).reinstance(pointY);
           continue;
         }
       }
       if(top && bottom && point) break;
     };
     if(!top){
-      this.pool.push(new Obstacle(this.monika, 0, rndH));
+      this.pool.push(new Obstacle(this.monika, 0, [this.hitMonikaSize[0],pointY]));
     }
     if(!bottom){
-      this.pool.push(new Obstacle(this.monika, this.monika.getSize()[1]-botH, botH));
+      this.pool.push(new Obstacle(this.monika, pointY+this.hitMonikaSize[1], [this.hitMonikaSize[0],this.monika.getSize()[1]]));
     }
     if(!point){
-      this.pool.push(new ObstaclePoint(this.monika, rndH, pointH));
+      this.pool.push(new ObstaclePoint(this.monika, pointY, this.hitMonikaSize, this.hitMonika));
     }
+  }
+  public start(){
+    this.generateNewPipes();
   }
   public render(delta: number, ctx: CanvasRenderingContext2D){
     this.generateTimer += delta;
-    if(this.generateTimer > 2){
+    if(this.generateTimer > this.generatorDistance){
       this.generateNewPipes();
       this.generateTimer = 0;
     }
@@ -101,5 +123,17 @@ class ObstaclePool implements Renderable{
         }
       }
     });
+  }
+  public load(callback: Function): void{
+    let i = new Image();
+    i.src = '/assets/assets.portal.png';
+    i.onload = () => {
+      createImageBitmap(i).then((s)=>{
+        this.hitMonika = s;
+        let h = this.monika.getSize()[1]/5;
+        this.hitMonikaSize = [s.width/s.height*h, h];
+        callback();
+      });
+    }
   }
 }
