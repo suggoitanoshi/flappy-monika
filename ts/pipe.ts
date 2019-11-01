@@ -2,6 +2,7 @@ class ObstacleBase extends Collidable implements Renderable{
   private monika: Monika;
   isActive: boolean;
   color: String;
+  type: number;
   constructor(monika: Monika, y: number, size: [number, number]){
     super();
     this.size = size;
@@ -22,8 +23,12 @@ class ObstacleBase extends Collidable implements Renderable{
   }
 }
 class Obstacle extends ObstacleBase{
+  constructor(monika, y, size){
+    super(monika, y, size);
+    this.type = 0b01;
+  }
   public render(delta, ctx){
-    // super.render(delta, ctx);
+    super.render(delta, ctx);
     // ctx.fillStyle = 'blue';
     // ctx.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
   }
@@ -37,12 +42,14 @@ class ObstaclePoint extends ObstacleBase{
   private hitMonika: ImageBitmap;
   constructor(monika: Monika, y: number, size: [number, number], hitMonika: ImageBitmap){
     super(monika, y, size);
+    this.type = 0b10;
     this.mask = 0b10;
     this.color = 'purple';
     this.hitMonika = hitMonika;
   }
   public reinstance = (y: number): Obstacle =>{
     super.reinstance(y, this.size[1]);
+    this.mask = 0b10;
     return this;
   }
   public onCollide(other: Collidable): void{
@@ -58,9 +65,10 @@ class ObstaclePool implements Renderable{
   private pool: Obstacle[];
   private monika: Monika;
   private generateTimer: number;
-  private generatorDistance = 4;
+  private generatorDistance = 2.5;
   private hitMonika: ImageBitmap;
   private hitMonikaSize: [number, number];
+  private margin: number = 20;
   constructor(monika: Monika){
     this.pool = [];
     this.monika = monika;
@@ -73,19 +81,19 @@ class ObstaclePool implements Renderable{
     let point = false;
     for(let p of this.pool){
       if(p.isActive){ continue; }
-      if(p.mask == 0b01){
+      if(p.type == 0b01){
         if(!top){
           top = true;
-          p.reinstance(0, pointY);
+          p.reinstance(0, pointY-this.margin);
           continue;
         }
         if(!bottom){
           bottom = true;
-          p.reinstance(pointY+this.hitMonikaSize[1], this.monika.getSize()[1]);
+          p.reinstance(pointY+this.hitMonikaSize[1]+this.margin, this.monika.getSize()[1]);
           continue;
         }
       }
-      if(p.mask == 0b10){
+      if(p.type == 0b10){
         if(!point){
           point = true;
           (<ObstaclePoint>p).reinstance(pointY);
@@ -117,7 +125,7 @@ class ObstaclePool implements Renderable{
       if(p.isActive){
         p.render(delta, ctx);
         p.checkCollision(monika.getPlayer());
-        p.position[0] -= this.monika.getSpeed();
+        p.position[0] -= this.monika.getSpeed()*delta;
         if(p.position[0] <= -p.size[0]){
           p.isActive = false;
         }

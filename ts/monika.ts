@@ -3,7 +3,7 @@ class JustMonika extends Collidable implements Renderable, Listener{
   upAccel: number;
   private monika: Monika;
   private monikaRender: ImageBitmap;
-  private angle: number;
+  // private angle: number;
   constructor(monika: Monika, x: number, y: number){
     super();
     this.position = [x,y];
@@ -12,7 +12,7 @@ class JustMonika extends Collidable implements Renderable, Listener{
     this.gravity = 200;
     this.upAccel = 0;
     this.monika = monika;
-    this.angle = 0;
+    // this.angle = 0;
   }
   public checkCollision(other: Collidable): boolean{
     return false 
@@ -34,15 +34,15 @@ class JustMonika extends Collidable implements Renderable, Listener{
       this.monika.GameOver();
     }
     if(this.upAccel >= 0) this.upAccel -= this.gravity/20;
-    this.angle += 1;
+    // this.angle += 1;
     // ctx.drawImage(this.monikaRender, -this.size[0]/2, -this.size[1]/2, this.size[0], this.size[1]);
     ctx.drawImage(this.monikaRender, this.position[0], this.position[1], this.size[0], this.size[1]);
     // ctx.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
     // ctx.restore();
   }
   public startClick(){
-    this.upAccel = this.gravity * 2;
-    this.angle = -25;
+    this.upAccel = this.gravity * 2.2;
+    // this.angle = -25;
   }
   public endClick(){}
   public load(callback: Function){

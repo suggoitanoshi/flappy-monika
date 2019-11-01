@@ -23,7 +23,7 @@ class Monika{
     this.height = 700;
     this.width = this.height*ratio;
 
-    this.scrollSpeed = 2;
+    this.scrollSpeed = 100;
     this.point = 0;
 
     this.cvs = document.createElement('canvas');

@@ -2,8 +2,10 @@ class ParallaxBackground implements Renderable{
   private bg: ImageBitmap;
   private size: [number, number];
   private position: number;
+  private speed: number;
   constructor(monika: Monika){
     this.size = monika.getSize();
+    this.speed = monika.getSpeed()/5;
     this.position = 0;
   }
   public load(callback: Function){
@@ -18,7 +20,7 @@ class ParallaxBackground implements Renderable{
     }
   }
   public render(delta, ctx){
-    this.position -= 50*delta;
+    this.position -= this.speed*delta;
     if(this.position + this.size[0] <= 0){
       this.position = 0
     }
