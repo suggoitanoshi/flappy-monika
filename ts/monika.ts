@@ -36,6 +36,12 @@ class JustMonika extends Collidable implements Renderable, Listener{
     if(this.upAccel >= 0) this.upAccel -= this.gravity/20;
     // this.angle += 1;
     // ctx.drawImage(this.monikaRender, -this.size[0]/2, -this.size[1]/2, this.size[0], this.size[1]);
+    if(this.monika.isDebug){
+      ctx.beginPath();
+      ctx.strokeStyle = 'red';
+      ctx.rect(this.position[0], this.position[1], this.size[0], this.size[1]);
+      ctx.stroke();
+    }
     ctx.drawImage(this.monikaRender, this.position[0], this.position[1], this.size[0], this.size[1]);
     // ctx.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
     // ctx.restore();
@@ -56,5 +62,9 @@ class JustMonika extends Collidable implements Renderable, Listener{
         callback();
       });
     }
+  }
+  public reset(){
+    this.position = [20, this.monika.getSize()[1]/2-10];
+    this.upAccel = 0;
   }
 }

@@ -1,7 +1,7 @@
 class ObstacleBase extends Collidable implements Renderable{
   private monika: Monika;
   isActive: boolean;
-  color: String;
+  debugColor: String;
   type: number;
   constructor(monika: Monika, y: number, size: [number, number]){
     super();
@@ -10,14 +10,22 @@ class ObstacleBase extends Collidable implements Renderable{
     this.position = [this.monika.getSize()[0]+this.size[0], y];
     this.mask = 0b001;
     this.isActive = true;
+    this.debugColor = 'blue';
   }
   public onCollide(other: Collidable): void{
   }
   public render(delta, ctx){
     this.position[0] -= this.monika.getSpeed()*delta;
+    if(this.monika.isDebug){
+      ctx.beginPath();
+      ctx.lineWidth = '2';
+      ctx.strokeStyle = this.debugColor;
+      ctx.rect(this.position[0], this.position[1], this.size[0], this.size[1]);
+      ctx.stroke();
+    }
   }
   public reinstance(y: number, h: number): Obstacle{
-    this.position = [this.monika.getSize()[0]+this.size[0],y];
+    this.position = [this.monika.getSize()[0],y];
     this.isActive = true;
     return this;
   }
@@ -25,16 +33,18 @@ class ObstacleBase extends Collidable implements Renderable{
 class Obstacle extends ObstacleBase{
   constructor(monika, y, size){
     super(monika, y, size);
+    this.position[0] += 3/8*this.size[0];
+    this.size[0] /= 4;
     this.type = 0b01;
+    this.debugColor = 'blue';
   }
   public render(delta, ctx){
     super.render(delta, ctx);
-    // ctx.fillStyle = 'blue';
-    // ctx.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
   }
   public reinstance = (y: number, h: number): Obstacle =>{
     super.reinstance(y, h);
     this.size[1] = h;
+    this.position[0] += 3/2*this.size[0];
     return this;
   }
 }
@@ -44,7 +54,7 @@ class ObstaclePoint extends ObstacleBase{
     super(monika, y, size);
     this.type = 0b10;
     this.mask = 0b10;
-    this.color = 'purple';
+    this.debugColor = 'purple';
     this.hitMonika = hitMonika;
   }
   public reinstance = (y: number): Obstacle =>{
@@ -68,14 +78,27 @@ class ObstaclePool implements Renderable{
   private generatorDistance = 2.5;
   private hitMonika: ImageBitmap;
   private hitMonikaSize: [number, number];
-  private margin: number = 20;
+  private lastGenerateY: number;
+  private generateDistance: number = 300;
+  private margin: number = 10;
   constructor(monika: Monika){
     this.pool = [];
     this.monika = monika;
     this.generateTimer = 0;
   }
   public generateNewPipes = () => {
-    let pointY = Util.getRandomRange(0, this.monika.getSize()[1]-this.hitMonikaSize[1]);
+    let pointY, min, max: number;
+    if(typeof this.lastGenerateY !== 'undefined'){
+      min = Math.max(0, this.lastGenerateY - this.generateDistance);
+      max = Math.min(this.monika.getSize()[1]-this.hitMonikaSize
+      [1], this.lastGenerateY +  this.generateDistance);
+    }
+    else{
+      min = 0;
+      max = this.monika.getSize()[1] - this.hitMonikaSize[1];
+    }
+    pointY = Util.getRandomRange(min, max);
+    this.lastGenerateY = pointY;
     let top = false;
     let bottom = false;
     let point = false;
@@ -103,10 +126,10 @@ class ObstaclePool implements Renderable{
       if(top && bottom && point) break;
     };
     if(!top){
-      this.pool.push(new Obstacle(this.monika, 0, [this.hitMonikaSize[0],pointY]));
+      this.pool.push(new Obstacle(this.monika, 0, [this.hitMonikaSize[0],pointY-this.margin]));
     }
     if(!bottom){
-      this.pool.push(new Obstacle(this.monika, pointY+this.hitMonikaSize[1], [this.hitMonikaSize[0],this.monika.getSize()[1]]));
+      this.pool.push(new Obstacle(this.monika, pointY+this.hitMonikaSize[1]+this.margin, [this.hitMonikaSize[0],this.monika.getSize()[1]]));
     }
     if(!point){
       this.pool.push(new ObstaclePoint(this.monika, pointY, this.hitMonikaSize, this.hitMonika));
@@ -143,5 +166,10 @@ class ObstaclePool implements Renderable{
         callback();
       });
     }
+  }
+  public reset(){
+    this.pool.forEach((p)=>{
+      p.isActive = false;
+    });
   }
 }

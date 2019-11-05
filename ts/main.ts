@@ -8,6 +8,7 @@ let el = new EventListener(monika);
 el.addListener(justmonika);
 let op = new ObstaclePool(monika);
 monika.addRenderObject(op);
+monika.setObstaclePool(op);
 justmonika.load(() => op.load(() => bg.load(()=>{
   op.start();
   monika.InitGame();

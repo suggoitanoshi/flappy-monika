@@ -8,12 +8,14 @@ class Monika{
   private renderBG: Renderable;
   private renderID: number;
   private isGameOver: boolean;
+  private debug: boolean = true;
 
   private point: number;
 
   private scrollSpeed: number;
 
   private justmonika: JustMonika;
+  private obstaclepool: ObstaclePool;
   /**
    * Game Constructor
    * Constructs the game with screen width and height
@@ -45,6 +47,10 @@ class Monika{
   public getSize(): [number, number]{
     return [this.width, this.height];
   }
+  public getRatio(): [number, number]{
+    let rect = this.cvs.getBoundingClientRect();
+    return [this.width / rect.width, this.height / rect.height];
+  }
   public getCanvas(): HTMLCanvasElement{
     return this.cvs;
   }
@@ -59,11 +65,18 @@ class Monika{
     return justmonika;
   }
 
+  public setObstaclePool(obstaclepool: ObstaclePool): void{
+    this.obstaclepool = obstaclepool;
+  };
+
   public addPoint(): void{
     this.point += 1;
   }
   public getPoint(): number{
     return this.point;
+  }
+  public isDebug(): boolean{
+    return this.debug;
   }
   /**
    * Initialize the game
@@ -74,6 +87,8 @@ class Monika{
   }
   public ResetGame(): void{
     this.point = 0;
+    this.justmonika.reset();
+    this.obstaclepool.reset();
   }
   public addRenderObject(renderObject: Renderable): void{
     this.renderObjects.push(renderObject);
@@ -86,16 +101,18 @@ class Monika{
    */
   public render(now: number): void{
     if(this.isGameOver) return;
-    let delta = .001;
-    if(this.lastRender != 0){
-      delta = (now-this.lastRender)/1000;
+    else{
+      let delta = .001;
+      if(this.lastRender != 0){
+        delta = (now-this.lastRender)/1000;
+      }
+      this.clear();
+      this.drawBg(delta, this.ctx);
+      this.renderObjects.forEach(r => r.render(delta, this.ctx));
+      this.renderPoints();
+      this.lastRender = now;
+      this.renderID = window.requestAnimationFrame((d) => this.render(d));
     }
-    this.lastRender = now;
-    this.clear();
-    this.drawBg(delta, this.ctx);
-    this.renderObjects.forEach(r => r.render(delta, this.ctx));
-    this.renderPoints();
-    this.renderID = window.requestAnimationFrame((d) => this.render(d));
   }
   private renderPoints(): void{
     this.ctx.font = '30px Helvetica';
@@ -107,7 +124,6 @@ class Monika{
     this.renderID = window.requestAnimationFrame((d) => this.render(d));
   }
   public GameOver(): void{
-    alert('Game Over');
     this.isGameOver = true;
   }
 }
