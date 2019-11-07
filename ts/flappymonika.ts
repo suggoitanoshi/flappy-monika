@@ -8,7 +8,7 @@ class Monika{
   private renderBG: Renderable;
   private renderID: number;
   private isGameOver: boolean;
-  private debug: boolean = true;
+  private debug: boolean = false;
 
   private point: number;
 
@@ -16,6 +16,10 @@ class Monika{
 
   private justmonika: JustMonika;
   private obstaclepool: ObstaclePool;
+
+  private overlay: HTMLElement;
+  private scoreEl: HTMLElement;
+  private restart: HTMLButtonElement;
   /**
    * Game Constructor
    * Constructs the game with screen width and height
@@ -35,8 +39,14 @@ class Monika{
     this.cvs.style.width = '100vw';
     this.cvs.style.height = '100vh';
 
-    document.body.append(this.cvs);
+    document.body.prepend(this.cvs);
     this.ctx = this.cvs.getContext('2d');
+
+    this.overlay = document.querySelector('.overlay');
+    this.scoreEl = document.querySelector('#score');
+    this.restart = document.querySelector('#restart');
+
+    this.restart.addEventListener('click', ()=>this.ResetGame());
   }
   private clear(): void{
     this.ctx.clearRect(0,0,this.width,this.height);
@@ -89,6 +99,8 @@ class Monika{
     this.point = 0;
     this.justmonika.reset();
     this.obstaclepool.reset();
+    this.overlay.classList.add('none');
+    this.start();
   }
   public addRenderObject(renderObject: Renderable): void{
     this.renderObjects.push(renderObject);
@@ -121,9 +133,12 @@ class Monika{
   }
   public start(): void{
     this.isGameOver = false;
+    this.lastRender = 0;
     this.renderID = window.requestAnimationFrame((d) => this.render(d));
   }
   public GameOver(): void{
     this.isGameOver = true;
+    this.scoreEl.innerText = this.point.toString();
+    this.overlay.classList.remove('none');
   }
 }

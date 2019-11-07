@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>JUST Monika</title>
+    <meta name="viewport" content='width=device-width,initial-scale=1'>
+    <meta charset='utf-8'>
+    <style>
+      body{
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .overlay{
+        background: rgba(0,0,0,.2);
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        text-align: center;
+        color: white;
+        padding-top: 2em;
+        font-size: 2em;
+      }
+      .box{
+        background: darkslateblue;
+        margin: auto;
+        width: max-content;
+        padding: 1em 2em;
+        border-radius: .1em;
+      }
+      .overlay.none{
+        display: none;
+      }
+      #restart{
+        border: none;
+        border-radius: .1em;
+        background: rgb(216, 43, 144);
+        font-size: 3em;
+        color: white;
+        transition: .1s background;
+      }
+      #restart:hover{
+        background: rgb(173, 16, 108);
+      }
+    </style>
+  </head>
+  <body>
+    <div class='overlay none'><div class='box'><h2>Game Over!</h2><span>Your Score: <span id='score'></span></span><br/><button id='restart'>Restart</button></div></div>
+    <script src='main/js/collidable.js'></script>
+    <script src='main/js/flappymonika.js'></script>
+    <script src='main/js/eventhandler.js'></script>
+    <script src='main/js/util.js'></script>
+    <script src='main/js/pipe.js'></script>
+    <script src='main/js/monika.js'></script>
+    <script src='main/js/parallaxbg.js'></script>
+    <script src='main/js/main.js'></script>
+  </body>
+</html>

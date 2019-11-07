@@ -16,7 +16,7 @@ class ObstacleBase extends Collidable implements Renderable{
   }
   public render(delta, ctx){
     this.position[0] -= this.monika.getSpeed()*delta;
-    if(this.monika.isDebug){
+    if(this.monika.isDebug()){
       ctx.beginPath();
       ctx.lineWidth = '2';
       ctx.strokeStyle = this.debugColor;
@@ -75,11 +75,11 @@ class ObstaclePool implements Renderable{
   private pool: Obstacle[];
   private monika: Monika;
   private generateTimer: number;
-  private generatorDistance = 2.5;
+  private generatorDistance = 2;
   private hitMonika: ImageBitmap;
   private hitMonikaSize: [number, number];
   private lastGenerateY: number;
-  private generateDistance: number = 300;
+  private generateDistance: number = 200;
   private margin: number = 10;
   constructor(monika: Monika){
     this.pool = [];
