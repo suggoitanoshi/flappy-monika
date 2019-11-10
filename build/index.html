@@ -30,8 +30,35 @@
         padding: 1em 2em;
         border-radius: .1em;
       }
-      .overlay.none{
+      .none{
         display: none;
+      }
+      .loader{
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: blueviolet;
+        color: white;
+        text-align: center;
+        padding-top: 25%;
+      }
+      .loader .bar-container{
+        background: white;
+        width: 75%;
+        height: 2em;
+        margin: auto;
+        border-radius: .2em;
+        box-sizing: border-box;
+        margin-bottom: 1em;
+        overflow: hidden;
+      }
+      .loader .bar-container .bar{
+        background: violet;
+        height: 100%;
+        background-clip: border-box;
+        transition: width .2s;
       }
       #restart{
         border: none;
@@ -44,10 +71,14 @@
       #restart:hover{
         background: rgb(173, 16, 108);
       }
+      canvas{
+        image-rendering: optimizeQuality;
+      }
     </style>
   </head>
   <body>
     <div class='overlay none'><div class='box'><h2>Game Over!</h2><span>Your Score: <span id='score'></span></span><br/><button id='restart'>Restart</button></div></div>
+    <div class='loader'><div class='bar-container'><div class='bar'></div></div><span>Loaded: <span id='load-percent'></span></span></div>
     <script src='main/js/collidable.js'></script>
     <script src='main/js/flappymonika.js'></script>
     <script src='main/js/eventhandler.js'></script>

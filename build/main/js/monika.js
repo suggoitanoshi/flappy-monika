@@ -2,6 +2,7 @@ class JustMonika extends Collidable {
     // private angle: number;
     constructor(monika, x, y) {
         super();
+        this.loaded = false;
         this.position = [x, y];
         this.size = [30, 30];
         this.mask = 0b11;
@@ -67,4 +68,3 @@ class JustMonika extends Collidable {
         this.upAccel = 0;
     }
 }
-//# sourceMappingURL=monika.js.map

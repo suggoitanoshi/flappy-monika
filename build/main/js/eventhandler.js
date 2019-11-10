@@ -25,4 +25,3 @@ class EventListener {
         this.listeners.push(listener);
     }
 }
-//# sourceMappingURL=eventhandler.js.map

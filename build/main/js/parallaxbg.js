@@ -1,12 +1,14 @@
 class ParallaxBackground {
-    constructor(monika) {
+    constructor(monika, bgsrc) {
+        this.loaded = false;
         this.size = monika.getSize();
         this.speed = monika.getSpeed() / 5;
         this.position = 0;
+        this.bgsrc = bgsrc;
     }
     load(callback) {
         let i = new Image();
-        i.src = '/assets/assets.background-space.png';
+        i.src = this.bgsrc;
         i.onload = () => {
             createImageBitmap(i).then((s) => {
                 this.bg = s;
@@ -25,4 +27,3 @@ class ParallaxBackground {
             ctx.drawImage(this.bg, this.position + this.size[0], 0, this.size[0], this.size[1]);
     }
 }
-//# sourceMappingURL=parallaxbg.js.map

@@ -13,4 +13,3 @@ class Collidable {
     }
     onCollide(other) { }
 }
-//# sourceMappingURL=collidable.js.map
