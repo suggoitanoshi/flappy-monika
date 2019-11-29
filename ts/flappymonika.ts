@@ -5,17 +5,23 @@ class Monika{
   private cvs: HTMLCanvasElement;
   private lastRender: number = 0;
   private renderObjects: Renderable[] = [];
-  private renderBG: Renderable;
   private renderID: number;
   private isGameOver: boolean;
-  private debug: boolean = false;
-
+  private debug: boolean = true;
+  
   private point: number;
-
+  
   private scrollSpeed: number;
-
+  
+  private renderBG: ParallaxBackground;
   private justmonika: JustMonika;
   private obstaclepool: ObstaclePool;
+
+  private objectsToLoad: Array<Renderable> = [];
+  private loadPercent: number;
+  private loadParent: HTMLElement;
+  private loadBar: HTMLElement;
+  private loadText: HTMLElement;
 
   private overlay: HTMLElement;
   private scoreEl: HTMLElement;
@@ -41,10 +47,16 @@ class Monika{
 
     document.body.prepend(this.cvs);
     this.ctx = this.cvs.getContext('2d');
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'medium';
 
     this.overlay = document.querySelector('.overlay');
     this.scoreEl = document.querySelector('#score');
     this.restart = document.querySelector('#restart');
+
+    this.loadParent = document.querySelector('.loader');
+    this.loadBar = this.loadParent.querySelector('.bar');
+    this.loadText = this.loadParent.querySelector('#load-percent');
 
     this.restart.addEventListener('click', ()=>this.ResetGame());
   }
@@ -100,13 +112,16 @@ class Monika{
     this.justmonika.reset();
     this.obstaclepool.reset();
     this.overlay.classList.add('none');
+    this.scrollSpeed = 100;
     this.start();
   }
   public addRenderObject(renderObject: Renderable): void{
     this.renderObjects.push(renderObject);
+    this.objectsToLoad.push(renderObject);
   }
-  public setBackground(bg: Renderable): void{
+  public setBackground(bg: ParallaxBackground): void{
     this.renderBG = bg;
+    this.objectsToLoad.push(bg);
   }
   /**
    * Function to render globally
@@ -118,6 +133,7 @@ class Monika{
       if(this.lastRender != 0){
         delta = (now-this.lastRender)/1000;
       }
+      this.scrollSpeed += .1*delta;
       this.clear();
       this.drawBg(delta, this.ctx);
       this.renderObjects.forEach(r => r.render(delta, this.ctx));
@@ -140,5 +156,34 @@ class Monika{
     this.isGameOver = true;
     this.scoreEl.innerText = this.point.toString();
     this.overlay.classList.remove('none');
+  }
+  public load(callback: Function): void{
+    this.objectsToLoad.forEach((o)=>{
+      o.load(()=>{
+        o.loaded = true;
+      });
+    });
+    this.loadCheck().then(()=>callback());
+  }
+  private loadCheck(): Promise<void>{
+    return new Promise((resolve, reject) => {
+      let interval = setInterval(()=>{
+        let allLoaded = true;
+        this.loadPercent = 0;
+        this.objectsToLoad.forEach((o)=>{
+          if(!o.loaded) allLoaded = false;
+          else this.loadPercent++;
+        });
+        this.loadPercent /= this.objectsToLoad.length;
+        this.loadPercent *= 100;
+        this.loadBar.style.width = this.loadPercent+'%';
+        this.loadText.innerText = this.loadPercent+'%';
+        if(allLoaded){
+          clearInterval(interval);
+          this.loadParent.classList.add('none');
+          resolve();
+        }
+      }, 1/100);
+    });
   }
 }

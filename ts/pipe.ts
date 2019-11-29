@@ -1,4 +1,4 @@
-class ObstacleBase extends Collidable implements Renderable{
+class ObstacleBase extends Collidable{
   private monika: Monika;
   isActive: boolean;
   debugColor: String;
@@ -72,6 +72,7 @@ class ObstaclePoint extends ObstacleBase{
 }
 
 class ObstaclePool implements Renderable{
+  loaded: boolean = false;
   private pool: Obstacle[];
   private monika: Monika;
   private generateTimer: number;
@@ -79,7 +80,7 @@ class ObstaclePool implements Renderable{
   private hitMonika: ImageBitmap;
   private hitMonikaSize: [number, number];
   private lastGenerateY: number;
-  private generateDistance: number = 200;
+  private generateDistance: number = 450;
   private margin: number = 10;
   constructor(monika: Monika){
     this.pool = [];
@@ -168,6 +169,7 @@ class ObstaclePool implements Renderable{
     }
   }
   public reset(){
+    this.lastGenerateY = 0;
     this.pool.forEach((p)=>{
       p.isActive = false;
     });

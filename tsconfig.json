@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
       "outDir": "./build/main/js",
-      "sourceMap": true,
-      "target": "es6",
+      "sourceMap": false,
+      "target": "es6"
   },
   "include": [
       "./ts/*"

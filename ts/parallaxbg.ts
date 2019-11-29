@@ -1,16 +1,19 @@
-class ParallaxBackground implements Renderable{
+class ParallaxBackground implements Renderable, Asset{
+  loaded: boolean = false;
   private bg: ImageBitmap;
   private size: [number, number];
   private position: number;
   private speed: number;
-  constructor(monika: Monika){
+  private bgsrc: string;
+  constructor(monika: Monika, bgsrc: string){
     this.size = monika.getSize();
     this.speed = monika.getSpeed()/5;
     this.position = 0;
+    this.bgsrc = bgsrc;
   }
   public load(callback: Function){
     let i = new Image();
-    i.src = '/assets/assets.background-space.png';
+    i.src = this.bgsrc;
     i.onload = () => {
       createImageBitmap(i).then((s)=>{
         this.bg = s;

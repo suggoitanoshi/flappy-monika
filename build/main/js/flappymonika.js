@@ -6,7 +6,7 @@ class Monika {
     constructor() {
         this.lastRender = 0;
         this.renderObjects = [];
-        this.debug = false;
+        this.debug = true;
         this.objectsToLoad = [];
         let ratio = window.innerWidth / window.innerHeight;
         this.height = 700;

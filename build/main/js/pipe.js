@@ -69,7 +69,7 @@ class ObstaclePool {
     constructor(monika) {
         this.loaded = false;
         this.generatorDistance = 2;
-        this.generateDistance = 150;
+        this.generateDistance = 450;
         this.margin = 10;
         this.generateNewPipes = () => {
             let pointY, min, max;
