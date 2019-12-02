@@ -68,8 +68,8 @@ class ObstaclePoint extends ObstacleBase {
 class ObstaclePool {
     constructor(monika) {
         this.loaded = false;
-        this.generatorDistance = 2;
-        this.generateDistance = 450;
+        this.generatorDistance = 3.5;
+        this.generateDistance = 100;
         this.margin = 10;
         this.generateNewPipes = () => {
             let pointY, min, max;

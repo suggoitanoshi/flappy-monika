@@ -76,11 +76,11 @@ class ObstaclePool implements Renderable{
   private pool: Obstacle[];
   private monika: Monika;
   private generateTimer: number;
-  private generatorDistance = 2;
+  private generatorDistance = 3.5;
   private hitMonika: ImageBitmap;
   private hitMonikaSize: [number, number];
   private lastGenerateY: number;
-  private generateDistance: number = 450;
+  private generateDistance: number = 100;
   private margin: number = 10;
   constructor(monika: Monika){
     this.pool = [];

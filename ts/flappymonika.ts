@@ -7,7 +7,7 @@ class Monika{
   private renderObjects: Renderable[] = [];
   private renderID: number;
   private isGameOver: boolean;
-  private debug: boolean = true;
+  private debug: boolean = false;
   
   private point: number;
   
