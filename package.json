@@ -1,0 +1,15 @@
+{
+  "name": "flappy-monika",
+  "version": "1.0.0",
+  "description": "Flappy Bird clone",
+  "author": "suggoitanoshi",
+  "scripts": {
+    "compile": "tsc",
+    "copy": "copyfiles assets/* build",
+    "build": "npm run compile && npm run copy"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.3.0",
+    "typescript": "^3.9.3"
+  }
+}
